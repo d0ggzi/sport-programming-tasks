@@ -1,3 +1,4 @@
-a = {1, 2}
-b = {1}
-print(a.difference(b))
+from math import atan2
+
+print(atan2(0 - 100, 1- 0))
+print(atan2(0 - 10, 1- 0))

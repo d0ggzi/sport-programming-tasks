@@ -1,61 +1,49 @@
-def f(x, y, id, table2, todo):
-    table = [list(el) for el in table2]
-    if todo != 0:
-        if todo == 1:
-            table[x][y] = table[x + 1][y] = table[x + 1][y + 1] = id
-            y += 1
-        elif todo == 2:
-            table[x][y] = table[x + 1][y] = table[x + 1][y - 1] = id
-            y -= 1
-        elif todo == 3:
-            table[x][y] = table[x + 1][y] = table[x][y + 1] = id
-            x += 1
-            y += 1
-        elif todo == 4:
-            table[x][y] = table[x + 1][y + 1] = table[x][y + 1] = id
-            x += 1
-    print(id, x, y)
-    for el in table:
-        print(*el)
-    print("---------------------------")
-    if x > len(table) - 1:
+def f(x, y, size, start, dx, dy):
+    global maxk
+    if size == 2:
+        for i in range(size):
+            for j in range(size):
+                if s[dx + i][dy + j] == -1:
+                    s[dx + i][dy + j] = maxk
+        maxk += 1
         return 0
-    if table[x][y] != -1:
-        for i in range(1, len(table) - 1):
-            for j in range(1, len(table) - 1):
-                if table[i][j] == -1:
-                    f(i, j, id, table, 0)
-    if table[x][y] == table[x + 1][y] == table[x + 1][y + 1] == -1:
-        f(x, y, id + 1, table, 1)
-    if table[x][y] == table[x + 1][y] == table[x + 1][y - 1] == -1:
-        f(x, y, id + 1, table, 2)
-    if table[x][y] == table[x + 1][y] == table[x][y + 1] == -1:
-        f(x, y, id + 1, table, 3)
-    if table[x][y] == table[x + 1][y + 1] == table[x][y + 1] == -1:
-        f(x, y, id + 1, table, 4)
-
-    ch = 0
-    for el in table:
-        if el.count(-1) == 0:
-            ch += 1
-    if ch == len(table):
-        for el in table:
-            print(*el)
-        exit()
-
-    return 0
-
+    if x < size // 2 and y < size // 2: # 1 quarter
+        s[dx + size//2][dy + size//2] = s[dx + size//2][dy + size//2 - 1] = s[dx + size//2 - 1][dy + size//2] = maxk
+        maxk += 1
+        f(x, y, size//2, (0, 0), dx, dy) # 1 quarter
+        f(size//2 - 1, 0, size//2, (0, size//2), dx, dy + size//2) # 2 quarter
+        f(0, size//2 - 1, size//2, (size//2, 0), dx + size//2, dy) # 3 quarter
+        f(0, 0, size//2, (size//2, size//2), dx + size//2, dy + size//2) # 4 quarter
+    elif x < size // 2 and y >= size // 2: # 2 quarter
+        s[dx + size//2][dy + size//2] = s[dx + size//2][dy + size//2 - 1] = s[dx + size//2 - 1][dy + size//2 - 1] = maxk
+        maxk += 1
+        f(x, y - size//2, size//2, (0, 0), dx, dy + size//2) # 2 quarter
+        f(size//2 - 1, size//2 - 1, size//2, (0, 0), dx, dy) # 1 quarter
+        f(0, size//2 - 1, size//2, (size//2, 0), dx + size//2, dy) # 3 quarter
+        f(0, 0, size//2, (size//2, size//2), dx + size//2, dy + size//2) # 4 quarter
+    elif x >= size // 2 and y < size // 2: # 3 quarter
+        s[dx + size//2][dy + size//2] = s[dx + size//2 - 1][dy + size//2] = s[dx + size//2 - 1][dy + size//2 - 1] = maxk
+        maxk += 1
+        f(x - size//2, y, size//2, (0, 0), dx + size//2, dy) 
+        f(size//2 - 1, size//2 - 1, size//2, (0, 0), dx, dy) # 1 quarter
+        f(size//2 - 1, 0, size//2, (0, size//2), dx, dy + size//2) # 2 quarter
+        f(0, 0, size//2, (size//2, size//2), dx + size//2, dy + size//2) # 4 quarter
+    elif x >= size // 2 and y >= size // 2: # 4 quarter
+        s[dx + size//2 - 1][dy + size//2] = s[dx + size//2][dy + size//2 - 1] = s[dx + size//2 - 1][dy + size//2 - 1] = maxk
+        maxk += 1
+        f(x - size//2, y - size//2, size//2, (0, 0), dx + size//2, dy + size//2) 
+        f(size//2 - 1, size//2 - 1, size//2, (0, 0), dx, dy) # 1 quarter
+        f(size//2 - 1, 0, size//2, (0, size//2), dx, dy + size//2) # 2 quarter
+        f(0, size//2 - 1, size//2, (size//2, 0), dx + size//2, dy) # 3 quarter
+        
+        
 
 n = 2 ** int(input())
-s = [[-1] * (n + 2) for i in range(n + 2)]
-for i in range(n + 2):
-    for j in range(n + 2):
-        if i == 0 or i == n + 1:
-            s[i][j] = 0
-        elif j == 0 or j == n + 1:
-            s[i][j] = 0
+s = [[-1] * n for i in range(n)]
 x, y = map(int, input().split())
+maxk = 1
 
-s[x][y] = 0
-f(1, 1, 0, s, 0)
-print(-1)
+s[x - 1][y - 1] = 0
+f(x - 1, y - 1, n, (0, 0), 0, 0)
+for el in s:
+    print("\t".join([str(elem) for elem in el]))
