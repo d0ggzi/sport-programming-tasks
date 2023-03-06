@@ -1,23 +1,28 @@
-from math import atan, pi
+from math import atan2, pi
 
 n = int(input())
-s = []
-x1, y1 = 1001, 1001
-for i in range(n):
-    x, y = map(int, input().split())
-    if y < y1 or (y == y1 and x < x1):
-        x1 = x
-        y1 = y
-    s.append((x, y, id))
+x1, y1 = map(int, input().split())
 angles = []
-for j, el in enumerate(s):
-    if el[0] == x1 and el[1] == y1: continue
-    elif el[0] == x1: angle = pi/2
-    elif el[1] == y1: angle = 0
-    else:
-        angle = atan((el[1] - y1) / (el[0] - x1))
-        if angle < 0:
-            angle += 2 * pi
-    angles.append((angle, s[2]))
-angles.sort()
-print(id+1, angles[n//2-1][1] + 1)
+
+for i in range(n - 1):
+    x, y = map(int, input().split())
+    angle = atan2((y - y1) , (x - x1))
+    dist = ((x - x1)**2 + (y-y1)**2)**0.5
+    if (y - y1) < 0:
+        angle += 2 * pi
+    angles.append((angle, dist, i + 2))
+
+print(n)
+print(1)
+angles.sort(key = lambda x: (x[0], x[1]))
+
+start = 0
+max_angle = angles[0][0] - angles[n-2][0] + 2*pi
+for i in range(n - 2):
+    if (angles[i+1][0] - angles[i][0] > max_angle):
+        max_angle = angles[i+1][0] - angles[i][0]
+        start = i + 1
+for i in range(start, n - 1):
+    print(angles[i][2])
+for i in range(start):
+    print(angles[i][2])
