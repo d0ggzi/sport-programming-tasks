@@ -20,7 +20,7 @@ while len(x) > 1:
                 prev = x[i][1]
                 if x[i][1] == 0: x.pop(i)
                 if x[0][1] == 0: x.pop(0)
-            
         i += 1
+    x = (sorted(x, key=lambda item: item[1], reverse=True))
 if len(x) == 1:
     print((x[0][0] + " ") * x[0][1], end = "")
